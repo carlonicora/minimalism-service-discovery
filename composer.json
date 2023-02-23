@@ -1,0 +1,30 @@
+{
+  "name": "carlonicora/minimalism-service-discovery",
+  "description": "Microservice discovery service for minimalism",
+  "version": "0.1.0",
+  "homepage": "https://carlonicora.com",
+  "time": "2022-02-07",
+  "license": "MIT",
+  "type": "library",
+  "minimum-stability": "stable",
+  "authors": [
+    {
+      "name": "Carlo Nicora",
+      "email": "carlo@carlonicora.com",
+      "homepage": "https://carlonicora.com",
+      "role": "Developer"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "CarloNicora\\Minimalism\\Services\\Discovery\\":"src/"
+    }
+  },
+  "require": {
+    "php": ">=8.2",
+    "carlonicora/jsonapi": "~3.0",
+    "carlonicora/minimalism": "~13.0",
+    "carlonicora/minimalism-interface-encrypter": "~1.0",
+    "carlonicora/minimalism-service-mysql": "~6.0"
+  }
+}
