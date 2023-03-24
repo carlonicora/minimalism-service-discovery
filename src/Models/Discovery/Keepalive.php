@@ -3,6 +3,7 @@ namespace CarloNicora\Minimalism\Services\Discovery\Models\Discovery;
 
 use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Enums\HttpCode;
+use CarloNicora\Minimalism\Services\Discovery\Factories\RegistryDataFactory;
 use CarloNicora\Minimalism\Services\Discovery\Models\Abstracts\AbstractDiscoveryModel;
 use Exception;
 
@@ -17,9 +18,11 @@ class Keepalive extends AbstractDiscoveryModel
         Document $payload,
     ): HttpCode
     {
-        if (!$this->crypter->isSignatureValid($payload)){
+        if (!$this->crypter->isSignatureValid($payload, new RegistryDataFactory($this->path, $this->discovery))){
             return HttpCode::Unauthorized;
         }
+        
+        $this->discovery->updateRegistry($payload);
 
         return HttpCode::Created;
     }

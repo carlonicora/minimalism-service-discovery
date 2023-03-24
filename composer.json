@@ -1,7 +1,7 @@
 {
   "name": "carlonicora/minimalism-service-discovery",
   "description": "Microservice discovery service for minimalism",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "homepage": "https://carlonicora.com",
   "time": "2022-02-07",
   "license": "MIT",
@@ -20,11 +20,21 @@
       "CarloNicora\\Minimalism\\Services\\Discovery\\":"src/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "CarloNicora\\Minimalism\\Services\\Discovery\\Tests\\":"tests/"
+    }
+  },
   "require": {
     "php": ">=8.2",
     "ext-openssl": "*",
     "carlonicora/jsonapi": "~3.0",
-    "carlonicora/minimalism": "~13.0"
+    "carlonicora/minimalism": "~13.0",
+    "carlonicora/minimalism-service-api-caller": "~1.0"
+  },
+  "require-dev": {
+    "roave/security-advisories": "dev-latest",
+    "phpunit/phpunit": "^9"
   },
   "config": {
     "allow-plugins": {

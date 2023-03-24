@@ -3,14 +3,21 @@ namespace CarloNicora\Minimalism\Services\Discovery\Helpers;
 
 readonly class ServerConfigurations
 {
+    /** @var string  */
+    private string $url;
+    /** @var string  */
+    private string $sslKey;
+
     public function __construct(
-        private string $url,
-        private string $publicKey,
-        private ?string $hostName=null,
+        string $configs,
     )
     {
+        [$this->url, $this->sslKey] = explode(',', $configs);
     }
 
+    /**
+     * @return string
+     */
     public function getUrl(): string
     {
         return $this->url;
@@ -19,16 +26,8 @@ readonly class ServerConfigurations
     /**
      * @return string
      */
-    public function getPublicKey(): string
+    public function getSslKey(): string
     {
-        return $this->publicKey;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getHostName(): ?string
-    {
-        return $this->hostName;
+        return $this->sslKey;
     }
 }

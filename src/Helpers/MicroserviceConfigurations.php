@@ -10,6 +10,8 @@ readonly class MicroserviceConfigurations
         private string $version,
         private string $publicKey,
         private ?string $privateKey=null,
+        private ?string $hostname=null,
+        private ?string $docker=null,
     )
     {
     }
@@ -60,5 +62,21 @@ readonly class MicroserviceConfigurations
     public function getVersion(): string
     {
         return $this->version;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDocker(): ?string
+    {
+        return $this->docker;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getHostname(): ?string
+    {
+        return $this->hostname;
     }
 }
