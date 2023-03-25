@@ -5,9 +5,9 @@ interface DataListInterface
 {
     /**
      * @param string $id
-     * @return DataInterface|null
+     * @return DataInterface|DataListInterface|null
      */
-    public function findChild(string $id): ?DataInterface;
+    public function findChild(string $id): DataInterface|DataListInterface|null;
 
     /**
      * @param DataInterface $data

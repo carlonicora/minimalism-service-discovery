@@ -14,9 +14,9 @@ abstract class AbstractDataList extends AbstractData implements DataListInterfac
 
     /**
      * @param string $id
-     * @return DataInterface|null
+     * @return DataInterface|DataListInterface|null
      */
-    public function findChild(string $id): ?DataInterface
+    public function findChild(string $id): DataInterface|DataListInterface|null
     {
         foreach ($this->children as $child){
             if (strtolower($child->getId()) === strtolower($id)){
