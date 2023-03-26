@@ -70,7 +70,7 @@ class MicroserviceDataFactory extends AbstractDataFactory
             $document->addResource($endpoint->export());
         }
 
-        $registryFile = $this->path->getRoot() . '/registry.json';
+        $registryFile = $this->path->getRoot() . '/microserviceRegistry.json';
         file_put_contents($registryFile, $document->export());
     }
 

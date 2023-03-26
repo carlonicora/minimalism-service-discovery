@@ -236,6 +236,14 @@ class Discovery extends AbstractService
     }
 
     /**
+     * @param array|null $microserviceRegistry
+     */
+    public function setMicroserviceRegistry(?array $microserviceRegistry): void
+    {
+        $this->microserviceRegistry = $microserviceRegistry;
+    }
+
+    /**
      * @return DataFactoryInterface
      */
     public function getDataFactory(): DataFactoryInterface

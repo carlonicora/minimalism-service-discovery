@@ -1,7 +1,7 @@
 {
   "name": "carlonicora/minimalism-service-discovery",
   "description": "Microservice discovery service for minimalism",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "homepage": "https://carlonicora.com",
   "time": "2022-02-07",
   "license": "MIT",
