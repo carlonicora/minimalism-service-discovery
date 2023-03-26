@@ -103,12 +103,12 @@ server {
 
                 $config .= "\n    location /v{$microservice->getVersion()}/{$this->convertEndpoint($endpoint->getId())} {\n";
 
-                if ($microservice->getHostname() !== null){
-                    $config .= "        proxy_pass {$microservice->getHostname()};\n";
-                } elseif ($microservice->getDocker() !== null) {
+                if ($microservice->getDocker() !== null) {
                     $config .= "        resolver 127.0.0.11 valid=10s;\n";
                     $config .= "        set \$upstream {$microservice->getDocker()};\n";
                     $config .= "        proxy_pass http://\$upstream;\n";
+                } elseif ($microservice->getHostname() !== null){
+                    $config .= "        proxy_pass {$microservice->getHostname()};\n";
                 }
 
                 $config .= "        include /etc/nginx/proxy.conf;\n";

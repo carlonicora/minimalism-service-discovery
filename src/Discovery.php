@@ -115,9 +115,7 @@ class Discovery extends AbstractService
         }
 
         $this->dataFactory = new RegistryDataFactory($this->path, $this);
-        if ($this->registry === null){
-            $this->registry = $this->dataFactory->read();
-        }
+        $this->registry = $this->dataFactory->read();
     }
 
     /**
@@ -126,8 +124,6 @@ class Discovery extends AbstractService
      */
     public function destroy(): void
     {
-        parent::destroy();
-
         if ($this->requiresKeepalive){
             /** @var ServiceData $service */
             foreach ($this->registry as $service){
@@ -142,7 +138,11 @@ class Discovery extends AbstractService
                     );
                 }
             }
+
+            $this->requiresKeepalive = false;
         }
+
+        parent::destroy();
     }
 
     /**

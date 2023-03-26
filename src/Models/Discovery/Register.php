@@ -37,7 +37,7 @@ class Register extends AbstractDiscoveryModel
                 $isUpdated = $registryService->hasChanged($service);
 
                 if ($isUpdated) {
-                    $registry[$serviceKey] = $registryService;
+                    $registryService->import($payload->resources[0]);
                 }
                 break;
             }
