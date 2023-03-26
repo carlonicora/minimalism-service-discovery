@@ -7,7 +7,6 @@ use CarloNicora\Minimalism\Services\Discovery\Data\MicroserviceData;
 use CarloNicora\Minimalism\Services\Discovery\Data\ServiceData;
 use CarloNicora\Minimalism\Services\Discovery\Factories\Abstracts\AbstractDataFactory;
 use Exception;
-use RuntimeException;
 
 class MicroserviceDataFactory extends AbstractDataFactory
 {
