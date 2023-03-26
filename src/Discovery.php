@@ -299,7 +299,7 @@ class Discovery extends AbstractService
                     $endpoint = $microservice->findChild($endpointId);
 
                     if ($endpoint !== null && $endpoint->findChild($method) !== null){
-                        $url = $microservice->getUrl();
+                        $url = $microservice->getUrl() . '/v' . $microservice->getVersion();
                         $hostname = $microservice->getHostname();
                         return $endpoint->getId();
                     }
