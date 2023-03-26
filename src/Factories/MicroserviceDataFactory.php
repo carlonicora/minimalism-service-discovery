@@ -38,7 +38,7 @@ class MicroserviceDataFactory extends AbstractDataFactory
         $registryFile = $this->path->getRoot() . '/microserviceRegistry.json';
 
         if (!is_file($registryFile)){
-            throw new RuntimeException('');
+            return [];
         }
 
         $endpointsData = file_get_contents($registryFile);
