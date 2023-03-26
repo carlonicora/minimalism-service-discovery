@@ -6,6 +6,7 @@ use CarloNicora\JsonApi\Objects\ResourceObject;
 use CarloNicora\Minimalism\Services\Discovery\Interfaces\DataInterface;
 use CarloNicora\Minimalism\Services\Discovery\Interfaces\DataListInterface;
 use Exception;
+use SplObjectStorage;
 
 abstract class AbstractDataList extends AbstractData implements DataListInterface
 {
@@ -14,9 +15,9 @@ abstract class AbstractDataList extends AbstractData implements DataListInterfac
 
     /**
      * @param string $id
-     * @return DataInterface|DataListInterface|null
+     * @return DataInterface|null
      */
-    public function findChild(string $id): DataInterface|DataListInterface|null
+    public function findChild(string $id): ?DataInterface
     {
         foreach ($this->children as $child){
             if (strtolower($child->getId()) === strtolower($id)){
@@ -92,23 +93,47 @@ abstract class AbstractDataList extends AbstractData implements DataListInterfac
      * @return bool
      */
     public function hasChanged(DataListInterface|DataInterface $data): bool {
-        foreach ($data->getElements() as $newChild) {
-            $found = false;
+        $response = false;
+        $newChildren = $data->getElements();
+        $currentChildren = $this->getElements();
 
-            foreach ($this->children as $existingChild) {
-                if ($newChild->getId() === $existingChild->getId()){
-                    $found = true;
-                    if ($existingChild->hasChanged($newChild)){
-                        return true;
+        if (count($data->getElements()) !== count($this->children)){
+            $this->children = $data->getElements();
+            $response = true;
+        } else {
+            $currentChildrenSet = new SplObjectStorage();
+            foreach ($currentChildren as $currentChild) {
+                $currentChildrenSet->attach($currentChild);
+            }
+
+            foreach ($newChildren as $newChild) {
+                if (!$currentChildrenSet->contains($newChild)) {
+                    $this->add($newChild);
+                    $response = true;
+                } else {
+                    $currentChildIndex = null;
+                    $currentChild = null;
+                    foreach ($currentChildren as $index => $currentChild) {
+                        if ($currentChild === $newChild) {
+                            $currentChildIndex = $index;
+                            break;
+                        }
+                    }
+
+                    if ($currentChildIndex !== null && $currentChild !== null && $currentChild->hasChanged($newChild)) {
+                        $response = true;
                     }
                 }
             }
 
-            if (!$found){
-                return true;
+            foreach ($currentChildren as $index => $currentChild) {
+                if (!in_array($currentChild, $newChildren, true)) {
+                    unset($currentChildren[$index]);
+                    $response = true;
+                }
             }
         }
 
-        return false;
+        return $response;
     }
 }

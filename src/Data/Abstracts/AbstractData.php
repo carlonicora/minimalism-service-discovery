@@ -64,6 +64,13 @@ abstract class AbstractData implements DataInterface
      * @return bool
      */
     public function hasChanged(DataListInterface|DataInterface $data): bool {
-        return $this->id !== $data->getId();
+        $response = false;
+
+        if($this->id !== $data->getId()){
+            $this->id = $data->getId();
+            $response = true;
+        }
+
+        return $response;
     }
 }

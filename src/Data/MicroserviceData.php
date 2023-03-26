@@ -160,26 +160,29 @@ class MicroserviceData extends AbstractDataList
      * @return bool
      */
     public function hasChanged(DataListInterface|DataInterface $data): bool {
+        $response = false;
         /** @var MicroserviceData $data */
 
         if ($this->url !== $data->getUrl()) {
-            return true;
+            $this->url = $data->getUrl();
+            $response = true;
         }
 
         if ($this->version !== $data->getVersion()) {
-            return true;
+            $this->version = $data->getVersion();
+            $response = true;
         }
 
         if ($this->hostname !== $data->getHostname()) {
-            return true;
+            $this->hostname = $data->getHostname();
+            $response = true;
         }
 
         if ($this->docker !== $data->getDocker()) {
-            return true;
+            $this->docker = $data->getDocker();
+            $response = true;
         }
 
-        parent::hasChanged($data);
-
-        return false;
+        return $response || parent::hasChanged($data);
     }
 }

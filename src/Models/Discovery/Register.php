@@ -3,6 +3,7 @@ namespace CarloNicora\Minimalism\Services\Discovery\Models\Discovery;
 
 use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Enums\HttpCode;
+use CarloNicora\Minimalism\Services\Discovery\Data\MicroserviceData;
 use CarloNicora\Minimalism\Services\Discovery\Data\ServiceData;
 use CarloNicora\Minimalism\Services\Discovery\Factories\MicroserviceDataFactory;
 use CarloNicora\Minimalism\Services\Discovery\Models\Abstracts\AbstractDiscoveryModel;
@@ -25,29 +26,35 @@ class Register extends AbstractDiscoveryModel
 
         $registry = $this->discovery->getRegistry();
 
-        /** @var ServiceData $service */
-        $service = null;
+        $isServiceFound = false;
         $isUpdated = false;
 
-        foreach ($registry as $serviceKey => $registryService){
-            if ($registryService->getId() === $payload->resources[0]->id){
-                $service = new ServiceData();
-                $service->import($payload->resources[0]);
+        $newService = new ServiceData();
+        $newService->import($payload->resources[0]);
+        /** @var MicroserviceData $newMicroservice */
+        $newMicroservice = $newService->getElements()[0];
 
-                $isUpdated = $registryService->hasChanged($service);
+        foreach ($registry as $registryService){
+            if ($registryService->getId() === $newService->getId()){
+                $isServiceFound = true;
 
-                if ($isUpdated) {
-                    $registryService->import($payload->resources[0]);
+                /** @var MicroserviceData $registryMicroservice */
+                foreach ($registryService->getElements() as $registryMicroservice){
+                    if ($registryMicroservice->getId() === $newMicroservice->getId()){
+                        $isUpdated = $registryMicroservice->hasChanged($newMicroservice);
+                        break 2;
+                    }
                 }
+
+                $registryService->add($newMicroservice);
+                $isUpdated = true;
                 break;
             }
         }
 
-        if ($service === null){
+        if (!$isServiceFound){
             $isUpdated = true;
-            $service = new ServiceData();
-            $service->import($payload->resources[0]);
-            $registry[] = $service;
+            $registry[] = $newService;
         }
 
         if ($isUpdated){
