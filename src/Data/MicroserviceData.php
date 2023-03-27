@@ -10,6 +10,7 @@ use Exception;
 
 class MicroserviceData extends AbstractDataList
 {
+    private string $name;
     private string $publicKey;
     private string $url;
     private string $version;
@@ -31,6 +32,7 @@ class MicroserviceData extends AbstractDataList
     {
         $response = parent::export();
 
+        $response->attributes->add(name: 'name', value: $this->name);
         $response->attributes->add(name: 'key', value: $this->publicKey);
         $response->attributes->add(name: 'url', value: $this->url);
         $response->attributes->add(name: 'version', value: $this->version);
@@ -54,6 +56,7 @@ class MicroserviceData extends AbstractDataList
     {
         parent::import($data);
 
+        $this->name = $data->attributes->get(name: 'name');
         $this->publicKey = $data->attributes->get(name: 'key');
         $this->url = $data->attributes->get(name: 'url');
         $this->version = $data->attributes->get(name: 'version');
@@ -65,6 +68,22 @@ class MicroserviceData extends AbstractDataList
         if ($data->attributes->has(name: 'docker')){
             $this->docker = $data->attributes->get(name: 'docker');
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName(string $name): void
+    {
+        $this->name = $name;
     }
 
     /**
@@ -162,6 +181,11 @@ class MicroserviceData extends AbstractDataList
     public function hasChanged(DataListInterface|DataInterface $data): bool {
         $response = false;
         /** @var MicroserviceData $data */
+
+        if ($this->name !== $data->getName()) {
+            $this->name = $data->getName();
+            $response = true;
+        }
 
         if ($this->url !== $data->getUrl()) {
             $this->url = $data->getUrl();

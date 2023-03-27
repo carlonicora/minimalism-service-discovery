@@ -91,7 +91,7 @@ server {
             $config .= "        include /etc/nginx/proxy.conf;\n";
             $config .= "        limit_except OPTIONS POST {deny all;}\n";
             $config .= "        proxy_set_header X-Original-URI \$request_uri;\n";
-            $config .= "        rewrite ^/v{$microservice->getVersion()}/microservice-{$microservice->getId()}(.*)$ /v{$microservice->getVersion()}$1 break;\n";
+            $config .= "        rewrite ^/v{$microservice->getVersion()}/microservice-{$microservice->getName()}(.*)$ /v{$microservice->getVersion()}$1 break;\n";
             $config .= "    }\n";
 
             /** @var EndpointData $endpoint */
@@ -101,7 +101,7 @@ server {
                     $allowed .= ' ' . $method->getId();
                 }
 
-                $config .= "\n    location /v{$microservice->getVersion()}/{$this->convertEndpoint($endpoint->getId())} {\n";
+                $config .= "\n    location /v{$microservice->getVersion()}/{$this->convertEndpoint($endpoint->getName())} {\n";
 
                 if ($microservice->getDocker() !== null) {
                     $config .= "        resolver 127.0.0.11 valid=10s;\n";

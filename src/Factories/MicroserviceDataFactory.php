@@ -7,6 +7,7 @@ use CarloNicora\Minimalism\Services\Discovery\Data\MicroserviceData;
 use CarloNicora\Minimalism\Services\Discovery\Data\ServiceData;
 use CarloNicora\Minimalism\Services\Discovery\Factories\Abstracts\AbstractDataFactory;
 use Exception;
+use RuntimeException;
 
 class MicroserviceDataFactory extends AbstractDataFactory
 {
@@ -20,7 +21,11 @@ class MicroserviceDataFactory extends AbstractDataFactory
     ): array {
         $service = new ServiceData($this->discovery->getMicroserviceConfigurations()->getService());
 
-        $microservice = new MicroserviceData($this->discovery->getMicroserviceConfigurations()->getName());
+        $microservice = new MicroserviceData(
+            $this->discovery->getMicroserviceConfigurations()->getService() . '-' .
+            $this->discovery->getMicroserviceConfigurations()->getName()
+        );
+        $microservice->setName($this->discovery->getMicroserviceConfigurations()->getName());
         $microservice->setPublicKey($this->discovery->getMicroserviceConfigurations()->getPublicKey());
         $microservice->setUrl($this->discovery->getMicroserviceConfigurations()->getUrl());
         $microservice->setVersion($this->discovery->getMicroserviceConfigurations()->getVersion());
@@ -37,7 +42,7 @@ class MicroserviceDataFactory extends AbstractDataFactory
         $registryFile = $this->path->getRoot() . '/microserviceRegistry.json';
 
         if (!is_file($registryFile)){
-            return [];
+            throw new RuntimeException('');
         }
 
         $endpointsData = file_get_contents($registryFile);
@@ -69,7 +74,7 @@ class MicroserviceDataFactory extends AbstractDataFactory
             $document->addResource($endpoint->export());
         }
 
-        $registryFile = $this->path->getRoot() . '/microserviceRegistry.json';
+        $registryFile = $this->path->getRoot() . '/registry.json';
         file_put_contents($registryFile, $document->export());
     }
 

@@ -236,14 +236,6 @@ class Discovery extends AbstractService
     }
 
     /**
-     * @param array|null $microserviceRegistry
-     */
-    public function setMicroserviceRegistry(?array $microserviceRegistry): void
-    {
-        $this->microserviceRegistry = $microserviceRegistry;
-    }
-
-    /**
      * @return DataFactoryInterface
      */
     public function getDataFactory(): DataFactoryInterface
@@ -299,7 +291,7 @@ class Discovery extends AbstractService
                     $endpoint = $microservice->findChild($endpointId);
 
                     if ($endpoint !== null && $endpoint->findChild($method) !== null){
-                        $url = $microservice->getUrl() . '/v' . $microservice->getVersion();
+                        $url = $microservice->getUrl();
                         $hostname = $microservice->getHostname();
                         return $endpoint->getId();
                     }
