@@ -91,7 +91,7 @@ server {
             $config .= "        include /etc/nginx/proxy.conf;\n";
             $config .= "        limit_except OPTIONS POST {deny all;}\n";
             $config .= "        proxy_set_header X-Original-URI \$request_uri;\n";
-            $config .= "        rewrite ^/v{$microservice->getVersion()}/microservice-{$microservice->getName()}(.*)$ /v{$microservice->getVersion()}$1 break;\n";
+            $config .= "        rewrite ^/v{$microservice->getVersion()}/microservice-{$microservice->getId()}(.*)$ /v{$microservice->getVersion()}$1 break;\n";
             $config .= "    }\n";
 
             /** @var EndpointData $endpoint */

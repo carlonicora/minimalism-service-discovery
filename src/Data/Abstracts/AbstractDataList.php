@@ -94,45 +94,23 @@ abstract class AbstractDataList extends AbstractData implements DataListInterfac
      */
     public function hasChanged(DataListInterface|DataInterface $data): bool {
         $response = false;
-        $newChildren = $data->getElements();
-        $currentChildren = $this->getElements();
 
         if (count($data->getElements()) !== count($this->children)){
-            $this->children = $data->getElements();
             $response = true;
         } else {
-            $currentChildrenSet = new SplObjectStorage();
-            foreach ($currentChildren as $currentChild) {
-                $currentChildrenSet->attach($currentChild);
-            }
-
-            foreach ($newChildren as $newChild) {
-                if (!$currentChildrenSet->contains($newChild)) {
-                    $this->add($newChild);
-                    $response = true;
-                } else {
-                    $currentChildIndex = null;
-                    $currentChild = null;
-                    /** @noinspection MissUsingForeachInspection */
-                    foreach ($currentChildren as $index => $currentChild) {
-                        if ($currentChild === $newChild) {
-                            $currentChildIndex = $index;
-                            break;
-                        }
-                    }
-
-                    if ($currentChildIndex !== null && $currentChild->hasChanged($newChild)) {
+            foreach ($data->getElements() as $newChild) {
+                foreach ($this->getElements() as $child){
+                    if ($child->getId() === $newChild->getId() && $child->hasChanged($newChild)) {
                         $response = true;
+                        break 2;
                     }
                 }
             }
+        }
 
-            foreach ($currentChildren as $index => $currentChild) {
-                if (!in_array($currentChild, $newChildren, true)) {
-                    unset($currentChildren[$index]);
-                    $response = true;
-                }
-            }
+
+        if ($response) {
+            $this->children = $data->getElements();
         }
 
         return $response;

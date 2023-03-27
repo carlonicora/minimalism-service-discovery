@@ -45,6 +45,8 @@ class Discovery extends AbstractService
 
     /** @var bool  */
     private bool $requiresKeepalive=false;
+    /** @var string|null  */
+    private ?string $microserviceRegistration=null;
 
     public function __construct(
         readonly Path $path,
@@ -140,6 +142,26 @@ class Discovery extends AbstractService
             }
 
             $this->requiresKeepalive = false;
+        } elseif ($this->microserviceRegistration !== null){
+            /** @var ServiceData $service */
+            foreach ($this->registry as $service){
+                /** @var MicroserviceData $microservice */
+                foreach ($service->getElements() as $microservice) {
+                    if ($microservice->getId() === $this->microserviceRegistration) {
+                        $document = $this->dataFactory->export($service, $microservice->getPublicKey());
+
+                        $this->sendKeepalive(
+                            $document,
+                            $microservice->getDiscoveryKeepaliveUrl(),
+                            $microservice->getHostname() ?? $microservice->getUrl(),
+                        );
+
+                        break;
+                    }
+                }
+            }
+
+            $this->microserviceRegistration = null;
         }
 
         parent::destroy();
@@ -257,6 +279,14 @@ class Discovery extends AbstractService
     public function getMicroserviceDataFactory(): DataFactoryInterface
     {
         return $this->microserviceDataFactory;
+    }
+
+    /**
+     * @param string $microserviceRegistration
+     */
+    public function setMicroserviceRegistration(string $microserviceRegistration): void
+    {
+        $this->microserviceRegistration = $microserviceRegistration;
     }
 
     /**

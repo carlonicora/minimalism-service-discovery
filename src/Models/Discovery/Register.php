@@ -62,6 +62,8 @@ class Register extends AbstractDiscoveryModel
             $this->discovery->getDataFactory()->write($registry);
 
             $this->discovery->updateNginxConfig();
+        } else {
+            $this->discovery->setMicroserviceRegistration($newMicroservice->getId());
         }
 
         return HttpCode::Created;
