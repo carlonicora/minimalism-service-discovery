@@ -76,23 +76,27 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/' . $this->serversConfig[$data->getId()]->getSslKey() . '/privkey.pem;
 ';
 
+        $keepAliveConfig = '';
+        $priorityEndpointConfig = '';
+        $endpointConfig = '';
+
         /** @var MicroserviceData $microservice */
         foreach ($data->getElements() as $microservice){
-            $config .= "\n    location {$microservice->getDiscoveryKeepaliveUrl() } {\n";
+            $keepAliveConfig .= "\n    location {$microservice->getDiscoveryKeepaliveUrl() } {\n";
 
             if ($microservice->getDocker() !== null) {
-                $config .= "        resolver 127.0.0.11 valid=10s;\n";
-                $config .= "        set \$upstream {$microservice->getDocker()};\n";
-                $config .= "        proxy_pass http://\$upstream;\n";
+                $keepAliveConfig .= "        resolver 127.0.0.11 valid=10s;\n";
+                $keepAliveConfig .= "        set \$upstream {$microservice->getDocker()};\n";
+                $keepAliveConfig .= "        proxy_pass http://\$upstream;\n";
             } elseif ($microservice->getHostname() !== null){
-                $config .= "        proxy_pass {$microservice->getHostname()};\n";
+                $keepAliveConfig .= "        proxy_pass {$microservice->getHostname()};\n";
             }
 
-            $config .= "        include /etc/nginx/proxy.conf;\n";
-            $config .= "        limit_except OPTIONS POST {deny all;}\n";
-            $config .= "        proxy_set_header X-Original-URI \$request_uri;\n";
-            $config .= "        rewrite ^/v{$microservice->getVersion()}/microservice-{$microservice->getId()}(.*)$ /v{$microservice->getVersion()}$1 break;\n";
-            $config .= "    }\n";
+            $keepAliveConfig .= "        include /etc/nginx/proxy.conf;\n";
+            $keepAliveConfig .= "        limit_except OPTIONS POST {deny all;}\n";
+            $keepAliveConfig .= "        proxy_set_header X-Original-URI \$request_uri;\n";
+            $keepAliveConfig .= "        rewrite ^/v{$microservice->getVersion()}/microservice-{$microservice->getId()}(.*)$ /v{$microservice->getVersion()}$1 break;\n";
+            $keepAliveConfig .= "    }\n";
 
             /** @var EndpointData $endpoint */
             foreach ($microservice->getElements() as $endpoint){
@@ -101,20 +105,41 @@ server {
                     $allowed .= ' ' . $method->getId();
                 }
 
-                $config .= "\n    location /v{$microservice->getVersion()}/{$this->convertEndpoint($endpoint->getName())} {\n";
+                $newConfig = "\n    location /v{$microservice->getVersion()}/{$this->convertEndpoint($endpoint->getName())} {\n";
 
                 if ($microservice->getDocker() !== null) {
-                    $config .= "        resolver 127.0.0.11 valid=10s;\n";
-                    $config .= "        set \$upstream {$microservice->getDocker()};\n";
-                    $config .= "        proxy_pass http://\$upstream;\n";
+                    $newConfig .= "        resolver 127.0.0.11 valid=10s;\n";
+                    $newConfig .= "        set \$upstream {$microservice->getDocker()};\n";
+                    $newConfig .= "        proxy_pass http://\$upstream;\n";
                 } elseif ($microservice->getHostname() !== null){
-                    $config .= "        proxy_pass {$microservice->getHostname()};\n";
+                    $newConfig .= "        proxy_pass {$microservice->getHostname()};\n";
                 }
 
-                $config .= "        include /etc/nginx/proxy.conf;\n";
-                $config .= "        limit_except $allowed {deny all;}\n";
-                $config .= "    }\n";
+                $newConfig .= "        include /etc/nginx/proxy.conf;\n";
+                $newConfig .= "        limit_except $allowed {deny all;}\n";
+                $newConfig .= "    }\n";
+
+                if (str_contains($endpoint->getName(), ':')){
+                    $priorityEndpointConfig .= $newConfig;
+                } else {
+                    $endpointConfig .= $newConfig;
+                }
             }
+        }
+
+        if ($keepAliveConfig !== ''){
+            $config .= "\n    ## Keep Alive Configurations";
+            $config .= $keepAliveConfig;
+        }
+
+        if ($priorityEndpointConfig !== '') {
+            $config .= "\n    ## One to Many endpoints (prioritised)";
+            $config .= $priorityEndpointConfig;
+        }
+
+        if ($endpointConfig !== '') {
+            $config .= "\n    ## Endpoints";
+            $config .= $endpointConfig;
         }
 
         $config .= '}';
