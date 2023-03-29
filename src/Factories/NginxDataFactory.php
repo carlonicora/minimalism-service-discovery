@@ -139,6 +139,10 @@ server {
             }
         }
 
+        if (str_starts_with($response, '/')){
+            $response = substr($response, 1);
+        }
+
         return $response;
     }
 }
