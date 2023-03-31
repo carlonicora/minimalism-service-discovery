@@ -328,10 +328,21 @@ class Discovery extends AbstractService
                     /** @var EndpointData $endpoint */
                     $endpoint = $microservice->findChild($endpointId);
 
-                    if ($endpoint !== null && $endpoint->findChild($method) !== null){
-                        $url = $microservice->getUrl() . '/v' . $microservice->getVersion();
-                        $hostname = $microservice->getHostname();
-                        return $endpoint->getId();
+                    if ($endpoint !== null){
+                        $hasMethod = false;
+
+                        foreach ($endpoint->getElements() as $endpointMethod) {
+                            if (strtolower($endpointMethod->getId()) === strtolower($method)){
+                                $hasMethod = true;
+                                break;
+                            }
+                        }
+
+                        if ($hasMethod) {
+                            $url = $microservice->getUrl() . '/v' . $microservice->getVersion();
+                            $hostname = $microservice->getHostname();
+                            return $endpoint->getName();
+                        }
                     }
                 }
             }
