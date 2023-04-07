@@ -154,11 +154,14 @@ server {
             return $endpoint;
         }
 
+        $edited = false;
+
         $parts = explode('/', $endpoint);
         $response = '';
         foreach ($parts as $part){
             if (str_starts_with($part, ':')){
                 $response .= '/[^/]+';
+                $edited = true;
             } else {
                 $response .= '/' . $part;
             }
@@ -166,6 +169,11 @@ server {
 
         if (str_starts_with($response, '/')){
             $response = substr($response, 1);
+        }
+
+        if ($edited){
+            $response = '~ ' . $response;
+            $response = str_replace('.','\.',$response);
         }
 
         return $response;
