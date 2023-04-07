@@ -105,7 +105,7 @@ server {
                     $allowed .= ' ' . $method->getId();
                 }
 
-                $newConfig = "\n    location ~ /v{$microservice->getVersion()}/{$this->convertEndpoint($endpoint->getName())} {\n";
+                $newConfig = "\n    location ~ /v" . str_replace('.', '\.', $microservice->getVersion()) . "/{$this->convertEndpoint($endpoint->getName())} {\n";
 
                 if ($microservice->getDocker() !== null) {
                     $newConfig .= "        resolver 127.0.0.11 valid=10s;\n";
