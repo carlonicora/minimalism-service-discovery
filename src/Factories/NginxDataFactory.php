@@ -69,7 +69,7 @@ readonly class NginxDataFactory implements DataFactoryInterface
 }
 
 server {
-    listen 443 ssl;
+    listen 443 ssl http2;
     server_name ' . $this->serversConfig[$data->getId()]->getUrl() . ';
 
     ssl_certificate /etc/letsencrypt/live/' . $this->serversConfig[$data->getId()]->getSslKey() . '/fullchain.pem;
