@@ -21,7 +21,7 @@ abstract class AbstractDataList extends AbstractData implements DataListInterfac
     {
         /** @var DataInterface $child */
         foreach ($this->children as $child){
-            if (str_ends_with(strtolower($child->getId()), '-' . strtolower($id))){
+            if (str_ends_with(strtolower($child->getId()), '-' . strtolower($id)) && substr_count($child->getId(), '-') === 2){
                 return $child;
             }
         }
