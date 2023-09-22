@@ -31,7 +31,6 @@ readonly class Crypter
         DataEncrypterInterface $dataEncrypter,
     ): void {
         $unencryptedSignature = $dataEncrypter->getUnencryptedSignature($payload);
-        /** @noinspection NullPointerExceptionInspection */
         openssl_public_encrypt($unencryptedSignature, $encrypted, $publicKey, OPENSSL_PKCS1_OAEP_PADDING);
         $payload->meta->add(name: 'signature', value: bin2hex($encrypted));
     }

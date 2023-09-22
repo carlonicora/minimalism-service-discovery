@@ -63,6 +63,7 @@ class Register extends AbstractDiscoveryModel
 
             $this->discovery->updateNginxConfig();
         } else {
+            $this->discovery->setRequiresKeepalive(true);
             $this->discovery->setMicroserviceRegistration($newMicroservice->getId());
         }
 

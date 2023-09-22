@@ -6,7 +6,6 @@ use CarloNicora\JsonApi\Objects\ResourceObject;
 use CarloNicora\Minimalism\Services\Discovery\Interfaces\DataInterface;
 use CarloNicora\Minimalism\Services\Discovery\Interfaces\DataListInterface;
 use Exception;
-use SplObjectStorage;
 
 abstract class AbstractDataList extends AbstractData implements DataListInterface
 {
@@ -19,7 +18,6 @@ abstract class AbstractDataList extends AbstractData implements DataListInterfac
      */
     public function findChild(string $id): DataInterface|DataListInterface|null
     {
-        /** @var DataInterface $child */
         foreach ($this->children as $child){
             if (str_ends_with(strtolower($child->getId()), '-' . strtolower($id)) && substr_count($child->getId(), '-') === 2){
                 return $child;

@@ -121,6 +121,14 @@ class Discovery extends AbstractService
     }
 
     /**
+     * @param bool $requiresKeepalive
+     */
+    public function setRequiresKeepalive(bool $requiresKeepalive): void
+    {
+        $this->requiresKeepalive = $requiresKeepalive;
+    }
+
+    /**
      * @return void
      * @throws Exception
      */
@@ -136,7 +144,8 @@ class Discovery extends AbstractService
                     $this->sendKeepalive(
                         $document,
                         $microservice->getDiscoveryKeepaliveUrl(),
-                        $microservice->getHostname() ?? $microservice->getUrl(),
+                        $microservice->getUrl(),
+                        $microservice->getHostname(),
                     );
                 }
             }
@@ -153,7 +162,8 @@ class Discovery extends AbstractService
                         $this->sendKeepalive(
                             $document,
                             $microservice->getDiscoveryKeepaliveUrl(),
-                            $microservice->getHostname() ?? $microservice->getUrl(),
+                            $microservice->getUrl(),
+                            $microservice->getHostname(),
                         );
 
                         break;
@@ -184,23 +194,24 @@ class Discovery extends AbstractService
     /**
      * @param Document $payload
      * @param string $endpoint
-     * @param string $hostname
+     * @param string $serverUrl
+     * @param string|null $hostname
      * @return void
      * @throws Exception
      */
     private function sendKeepalive(
         Document $payload,
         string $endpoint,
-        string $hostname,
+        string $serverUrl,
+        ?string $hostname=null,
     ): void {
-        /** @noinspection UnusedFunctionResultInspection */
         (new ApiCaller())->call(
             request: new ApiRequest(
                 verb: Verbs::Post,
                 endpoint: $endpoint,
                 payload: $payload->prepare()
             ),
-            serverUrl: 'https://host.docker.internal',
+            serverUrl: $serverUrl,
             hostName: $hostname,
         );
     }
@@ -298,13 +309,13 @@ class Discovery extends AbstractService
         Document $document,
     ): void {
         $this->registry = [];
-        
+
         foreach ($document->resources as $serviceResource){
             $service = new ServiceData($serviceResource->id);
             $service->import($serviceResource);
             $this->registry[] = $service;
         }
-        
+
         $this->dataFactory->write($this->registry);
     }
 
